@@ -2,12 +2,12 @@
 
 ### Install with stow:
 
-stow --target ~/.config .
+```stow --target ~/.config .```
 
 ### Homebrew installation:
 
 # Leaving a machine
-brew leaves > leaves.txt
+```brew leaves > leaves.txt```
 
 # Fresh installation
-xargs brew install < leaves.txt
+```xargs brew install < leaves.txt```
