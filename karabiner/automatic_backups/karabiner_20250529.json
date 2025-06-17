@@ -1,0 +1,60 @@
+{
+  "profiles" : [ {
+    "name" : "Default profile",
+    "virtual_hid_keyboard" : {
+      "keyboard_type_v2" : "iso"
+    }
+  }, {
+    "name" : "Default",
+    "selected" : true,
+    "virtual_hid_keyboard" : {
+      "keyboard_type_v2" : "iso"
+    },
+    "complex_modifications" : {
+      "parameters" : {
+        "basic.simultaneous_threshold_milliseconds" : 50,
+        "basic.to_delayed_action_delay_milliseconds" : 500,
+        "basic.to_if_alone_timeout_milliseconds" : 1000,
+        "basic.to_if_held_down_threshold_milliseconds" : 500
+      },
+      "rules" : [ {
+        "description" : "hhkb-ish modifier keys for ISO keyboard",
+        "manipulators" : [ {
+          "from" : {
+            "key_code" : "caps_lock",
+            "modifiers" : {
+              "optional" : [ "any" ]
+            }
+          },
+          "to" : [ {
+            "key_code" : "left_control"
+          } ],
+          "type" : "basic"
+        }, {
+          "from" : {
+            "key_code" : "tab",
+            "modifiers" : {
+              "mandatory" : [ "left_control" ],
+              "optional" : [ "any" ]
+            }
+          },
+          "to" : [ {
+            "key_code" : "caps_lock"
+          } ],
+          "type" : "basic"
+        }, {
+          "from" : {
+            "key_code" : "non_us_backslash",
+            "modifiers" : {
+              "optional" : [ "any" ]
+            }
+          },
+          "to" : [ {
+            "key_code" : "grave_accent_and_tilde"
+          } ],
+          "type" : "basic"
+        } ]
+      } ]
+    }
+  } ]
+}
