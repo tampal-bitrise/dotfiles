@@ -1,6 +1,7 @@
 -- ===================================================
 -- centralized config file
 vim.opt.number = true
+vim.opt.numberwidth = 3
 
 -- ===================================================
 -- Bootstrap lazy.nvim
@@ -63,10 +64,6 @@ require("lazy").setup({
 		},
 		{ "tpope/vim-fugitive" },
 		{ "lewis6991/gitsigns.nvim" },
-
-		-- TODO
-		--  "folke/noice.nvim",
-
 		{
 			"stevearc/conform.nvim",
 			event = { "BufWritePre" },
@@ -82,6 +79,58 @@ require("lazy").setup({
 					timeout_ms = 500,
 					lsp_fallback = true,
 				},
+			},
+		},
+		{
+			"folke/todo-comments.nvim",
+			dependencies = { "nvim-lua/plenary.nvim" },
+			opts = {},
+		},
+		-- lazy.nvim
+		-- TODO: increase timeout on messages
+		{
+			"folke/snacks.nvim",
+			priority = 1000,
+			lazy = false,
+			---@type snacks.Config
+			opts = {
+				-- your configuration comes here
+				-- or leave it empty to use the default settings
+				bigfile = { enabled = true },
+				dashboard = {
+					preset = {
+						header = [[
+                                                              
+@@@@@@@   @@@@@@   @@@@@@@@@@   @@@@@@@    @@@@@@   @@@       
+@@@@@@@  @@@@@@@@  @@@@@@@@@@@  @@@@@@@@  @@@@@@@@  @@@       
+  @@!    @@!  @@@  @@! @@! @@!  @@!  @@@  @@!  @@@  @@!       
+  !@!    !@!  @!@  !@! !@! !@!  !@!  @!@  !@!  @!@  !@!       
+  @!!    @!@!@!@!  @!! !!@ @!@  @!@@!@!   @!@!@!@!  @!!       
+  !!!    !!!@!!!!  !@!   ! !@!  !!@!!!    !!!@!!!!  !!!       
+  !!:    !!:  !!!  !!:     !!:  !!:       !!:  !!!  !!:       
+  :!:    :!:  !:!  :!:     :!:  :!:       :!:  !:!   :!:      
+   ::    ::   :::  :::     ::    ::       ::   :::   :: ::::  
+   :      :   : :   :      :     :         :   : :  : :: : :  
+                                                              
+]],
+					},
+					sections = {
+						{ section = "header" },
+						{ section = "keys", gap = 1, padding = 1 },
+						{ section = "startup" },
+					},
+					debug = false,
+				},
+				explorer = { enabled = true },
+				indent = { enabled = true },
+				input = { enabled = false },
+				picker = { enabled = false },
+				notifier = { enabled = false },
+				quickfile = { enabled = true },
+				scope = { enabled = true },
+				scroll = { enabled = false },
+				statuscolumn = { enabled = false },
+				words = { enabled = true },
 			},
 		},
 	},
@@ -155,6 +204,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		-- these will be buffer-local keybindings
 		-- because they only work if you have an active language server
 
+		-- TODO: replace with one liners
 		vim.keymap.set("n", "gd", function()
 			vim.lsp.buf.definition()
 		end, opts)
@@ -359,3 +409,12 @@ require("gitsigns").setup({
 		map({ "o", "x" }, "ih", gitsigns.select_hunk)
 	end,
 })
+
+vim.keymap.set("n", "<leader>to", ":TodoQuickFix<CR>")
+vim.keymap.set({ "n", "v" }, "<Space>", "<Nop>", { silent = true })
+
+-- Keep signcolumn on by default
+vim.wo.signcolumn = "yes"
+
+-- Decrease update time
+vim.o.updatetime = 250
