@@ -42,6 +42,10 @@ require("lazy").setup({
 
 		-- colors
 		{ "Yazeed1s/oh-lucy.nvim" },
+		{ "sainnhe/edge" },
+		{ "miikanissi/modus-themes.nvim", priority = 1000 },
+		{ "bluz71/vim-moonfly-colors", name = "moonfly", lazy = false, priority = 1000 },
+		{ "marko-cerovac/material.nvim" },
 
 		{ "nvim-telescope/telescope.nvim", dependencies = "nvim-lua/plenary.nvim" },
 		{ "nvim-treesitter/nvim-treesitter", cmd = "TSUpdate" },
@@ -53,11 +57,12 @@ require("lazy").setup({
 				"nvim-lua/plenary.nvim",
 				"nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
 				"MunifTanjim/nui.nvim",
-				-- {"3rd/image.nvim", opts = {}}, -- Optional image support in preview window: See `# Preview Mode` for more information
+				--{ "3rd/image.nvim", opts = {} }, -- Optional image support in preview window: See `# Preview Mode` for more information
 			},
-			lazy = true, -- neo-tree will lazily load itself
-			opts = {},
+			lazy = false, -- neo-tree will lazily load itself
+			opts = { auto_expand_width = true },
 		},
+		{ "nvim-tree/nvim-web-devicons", opts = {} },
 		{
 			"nvim-lualine/lualine.nvim",
 			dependencies = { "nvim-tree/nvim-web-devicons" },
@@ -74,6 +79,7 @@ require("lazy").setup({
 			opts = {
 				formatters_by_ft = {
 					lua = { "stylua" },
+					--yaml = { "yamlfix" },
 				},
 				format_on_save = {
 					timeout_ms = 500,
@@ -122,7 +128,21 @@ require("lazy").setup({
 					debug = false,
 				},
 				explorer = { enabled = true },
-				indent = { enabled = true },
+				indent = {
+					indent = {
+						enabled = false,
+					},
+					chunk = {
+						enabled = true,
+						char = {
+							horizontal = "─",
+							vertical = "│",
+							corner_top = "╭",
+							corner_bottom = "╰",
+							arrow = "─",
+						},
+					},
+				},
 				input = { enabled = false },
 				picker = { enabled = false },
 				notifier = { enabled = false },
@@ -133,6 +153,61 @@ require("lazy").setup({
 				words = { enabled = true },
 			},
 		},
+		{
+			"folke/trouble.nvim",
+			opts = {}, -- for default options, refer to the configuration section for custom setup.
+			cmd = "Trouble",
+			keys = {
+				{
+					"<leader>xx",
+					"<cmd>Trouble diagnostics toggle<cr>",
+					desc = "Diagnostics (Trouble)",
+				},
+				{
+					"<leader>xX",
+					"<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
+					desc = "Buffer Diagnostics (Trouble)",
+				},
+				{
+					"<leader>cs",
+					"<cmd>Trouble symbols toggle focus=false<cr>",
+					desc = "Symbols (Trouble)",
+				},
+				{
+					"<leader>cl",
+					"<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
+					desc = "LSP Definitions / references / ... (Trouble)",
+				},
+				{
+					"<leader>xL",
+					"<cmd>Trouble loclist toggle<cr>",
+					desc = "Location List (Trouble)",
+				},
+				{
+					"<leader>xQ",
+					"<cmd>Trouble qflist toggle<cr>",
+					desc = "Quickfix List (Trouble)",
+				},
+			},
+		},
+		--{
+		--	"folke/which-key.nvim",
+		--	event = "VeryLazy",
+		--	opts = {
+		--		-- your configuration comes here
+		--		-- or leave it empty to use the default settings
+		--		-- refer to the configuration section below
+		--	},
+		--	keys = {
+		--		{
+		--			"<leader>?",
+		--			function()
+		--				require("which-key").show({ global = false })
+		--			end,
+		--			desc = "Buffer Local Keymaps (which-key)",
+		--		},
+		--	},
+		--},
 	},
 	-- Configure any other settings here. See the documentation for more details.
 	checker = { enabled = true, notify = false },
@@ -172,12 +247,15 @@ vim.g.python_recommended_style = 0
 
 vim.o.background = "dark" -- or "light" for light mode
 
-vim.diagnostic.config({
-	float = {
-		source = "always",
-		border = border,
-	},
-})
+--vim.diagnostic.config({ virtual_lines = true })
+vim.diagnostic.config({ virtual_text = true })
+
+--vim.diagnostic.config({
+--	float = {
+--		source = "always",
+--		border = border,
+--	},
+--})
 
 -- ====================================
 -- old lang settings
@@ -229,6 +307,9 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		vim.keymap.set("n", "<leader>vrr", function()
 			vim.lsp.buf.references()
 		end, opts)
+		vim.keymap.set("n", "fr", function()
+			require("telescope.builtin").lsp_references()
+		end, { noremap = true, silent = true })
 		vim.keymap.set("n", "<leader>vrn", function()
 			vim.lsp.buf.rename()
 		end, opts)
@@ -236,24 +317,69 @@ vim.api.nvim_create_autocmd("LspAttach", {
 			vim.lsp.buf.signature_help()
 		end, opts)
 		vim.keymap.set("n", "<leader>v", ":vsplit | lua vim.lsp.buf.definition()<CR>")
+		vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
+		vim.keymap.set("n", "<leader>sr", require("telescope.builtin").resume, { desc = "[S]earch [R]esume" })
 	end,
 })
 
-local lsp_capabilities = require("cmp_nvim_lsp").default_capabilities()
+--local lsp_capabilities = require("cmp_nvim_lsp").default_capabilities()
 
-local default_setup = function(server)
-	require("lspconfig")[server].setup({
-		capabilities = lsp_capabilities,
-	})
-end
+--local default_setup = function(server)
+--	print("default setup is called")
+--	require("lspconfig")[server].setup({
+--		capabilities = lsp_capabilities,
+--	})
+--end
 
 -- ===================================================
 -- mason
-require("mason").setup({})
-require("mason-lspconfig").setup({
+--require("mason").setup({})
+--require("mason-lspconfig").setup({
+--	ensure_installed = { "gopls" },
+--	handlers = {
+--		["gopls"] = function()
+--			print("setting up gopls with custom flags")
+--			local util = require("lspconfig").gopls.setup({
+--				on_attach = on_attach,
+--				capabilities = lsp_capabilities,
+--				filetypes = { "go", "gomod" },
+--				root_dir = util.root_pattern("go.mod", ".git"),
+--				settings = {
+--					gopls = {
+--						buildFlags = { "-tags=integration" },
+--					},
+--				},
+--			})
+--		end,
+--
+--		-- default for everything else
+--		default_setup,
+--	},
+--})
+
+local mason = require("mason")
+local mason_lspconfig = require("mason-lspconfig")
+local lspconfig = require("lspconfig")
+local util = require("lspconfig.util")
+
+local capabilities = require("cmp_nvim_lsp").default_capabilities()
+
+-- Setup mason and mason-lspconfig
+mason.setup()
+mason_lspconfig.setup({
 	ensure_installed = { "gopls" },
-	handlers = {
-		default_setup,
+	automatic_installation = true,
+})
+
+-- Setup gopls manually
+lspconfig.gopls.setup({
+	cmd = { vim.fn.stdpath("data") .. "/mason/bin/gopls" },
+	capabilities = capabilities,
+	root_dir = util.root_pattern("go.mod", ".git"),
+	settings = {
+		gopls = {
+			buildFlags = { "-tags=unit integration" },
+		},
 	},
 })
 
@@ -282,9 +408,6 @@ cmp.setup({
 local builtin = require("telescope.builtin")
 vim.keymap.set("n", "<leader>ff", builtin.find_files, {})
 vim.keymap.set("n", "<C-p>", builtin.git_files, {})
-vim.keymap.set("n", "<leader>ps", function()
-	builtin.grep_string({ search = vim.fn.input("Grep > ") })
-end)
 vim.keymap.set("n", "<leader>nn", function()
 	builtin.commands()
 end)
@@ -323,9 +446,16 @@ vim.api.nvim_create_autocmd("FileType", {
 	command = "setlocal shiftwidth=2 tabstop=2 noexpandtab nolist",
 })
 
---vim.cmd 'colorscheme vim' -- if the above fails, then use default
-vim.cmd.colorscheme("oh-lucy")
+-- TODO: set this dynamically
+favorites = { "oh-lucy" }
+---- HACK: this should appear before setting colorscheme
+vim.g.edge_style = "aura"
+vim.cmd.colorscheme("edge")
+--vim.g.material_style = "darker"
+--vim.cmd("colorscheme material")
 
+--
+--vim.cmd([[colorscheme moonfly]]) -- modus_operandi, modus_vivendi
 -- lualine layout
 -- +-------------------------------------------------+
 -- | A | B | C                             X | Y | Z |
@@ -336,11 +466,11 @@ require("lualine").setup({
 		component_separators = "|",
 		section_separators = "",
 	},
-	sections = {
-		lualine_a = {
-			"buffers",
-		},
-	},
+	--sections = {
+	--	lualine_a = {
+	--		"buffers",
+	--	},
+	--},
 })
 
 require("gitsigns").setup({
