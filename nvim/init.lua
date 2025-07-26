@@ -46,6 +46,8 @@ require("lazy").setup({
 		{ "miikanissi/modus-themes.nvim", priority = 1000 },
 		{ "bluz71/vim-moonfly-colors", name = "moonfly", lazy = false, priority = 1000 },
 		{ "marko-cerovac/material.nvim" },
+		{ "techtuner/aura-neovim" },
+		{ "savq/melange-nvim" },
 
 		{ "nvim-telescope/telescope.nvim", dependencies = "nvim-lua/plenary.nvim" },
 		{ "nvim-treesitter/nvim-treesitter", cmd = "TSUpdate" },
@@ -443,16 +445,18 @@ require("nvim-treesitter.configs").setup({
 
 vim.api.nvim_create_autocmd("FileType", {
 	pattern = "go",
-	command = "setlocal shiftwidth=2 tabstop=2 noexpandtab nolist",
+	command = "setlocal shiftwidth=4 tabstop=4 noexpandtab nolist",
 })
 
 -- TODO: set this dynamically
-favorites = { "oh-lucy" }
+favorites = { "oh-lucy", "edge" }
 ---- HACK: this should appear before setting colorscheme
-vim.g.edge_style = "aura"
-vim.cmd.colorscheme("edge")
+--vim.g.edge_style = "aura"
+--vim.cmd.colorscheme("edge")
+--vim.cmd.colorscheme("aura")
 --vim.g.material_style = "darker"
 --vim.cmd("colorscheme material")
+vim.cmd("colorscheme melange")
 
 --
 --vim.cmd([[colorscheme moonfly]]) -- modus_operandi, modus_vivendi
